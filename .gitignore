@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.log
+*.err
+dist/
+extension-dist/
+event-notifier-extension.zip
+.DS_Store
+Thumbs.db

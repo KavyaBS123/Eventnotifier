@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Event Notifier — Bangalore Tech Events",
+  "version": "1.0.0",
+  "description": "Real-time notifications for Hackathons, AI Meetups, and Startup events in Bangalore.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png"
+    },
+    "default_title": "Event Notifier"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "notifications",
+    "alarms",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://localhost:3001/*",
+    "https://*.railway.app/*",
+    "https://*.up.railway.app/*"
+  ]
+}
