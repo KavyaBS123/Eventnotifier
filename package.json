@@ -1,0 +1,8 @@
+{
+  "name": "eventnotifier",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "cd backend && npm install && npx playwright install chromium && npx prisma generate && npx prisma migrate deploy",
+    "start": "cd backend && node start.js"
+  }
+}
