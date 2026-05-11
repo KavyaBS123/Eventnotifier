@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#7c3aed" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon192.png" />
+  <title>Event Notifier — Tech Events</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: #0f0f1a; color: #e2e8f0; min-height: 100vh; }
+    .container { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
+    header { text-align: center; margin-bottom: 24px; }
+    .logo { font-size: 48px; margin-bottom: 8px; }
+    h1 { font-size: 28px; font-weight: 700; }
+    .sub { color: #94a3b8; font-size: 14px; }
+
+    .tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; justify-content: center; }
+    .tab { padding: 8px 16px; border-radius: 20px; border: 1px solid #1e293b; background: transparent; color: #94a3b8; cursor: pointer; font-size: 13px; font-weight: 500; }
+    .tab.active { background: #7c3aed; color: #fff; border-color: #7c3aed; }
+
+    .status { display: flex; justify-content: space-between; padding: 8px 0; color: #64748b; font-size: 13px; margin-bottom: 16px; border-bottom: 1px solid #1e293b; }
+
+    .events { display: flex; flex-direction: column; gap: 12px; }
+    .card { background: #1e1e2e; border-radius: 12px; padding: 16px; border-left: 4px solid #7c3aed; }
+    .card-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 6px; }
+    .tag { font-size: 11px; padding: 2px 8px; border-radius: 20px; }
+    .tag-hackathon { background: #7c3aed22; color: #a78bfa; }
+    .tag-ai { background: #05966922; color: #34d399; }
+    .tag-startup { background: #f59e0b22; color: #fbbf24; }
+    .tag-meetup { background: #3b82f622; color: #60a5fa; }
+    .tag-web3 { background: #ec489922; color: #f472b6; }
+    .tag-design { background: #8b5cf622; color: #a78bfa; }
+    .tag-tech { background: #47556922; color: #94a3b8; }
+    .source { font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #1d4ed822; color: #60a5fa; }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 6px; }
+    .card-details { font-size: 13px; color: #94a3b8; display: flex; gap: 16px; flex-wrap: wrap; }
+    .card-link { display: inline-block; margin-top: 10px; color: #a78bfa; font-size: 13px; font-weight: 600; text-decoration: none; }
+    .card-link:hover { text-decoration: underline; }
+
+    .subscribe { margin-top: 24px; background: #1e1e2e; border-radius: 12px; padding: 20px; text-align: center; }
+    .subscribe h2 { font-size: 18px; margin-bottom: 4px; }
+    .subscribe p { color: #94a3b8; font-size: 13px; margin-bottom: 16px; }
+    .form-row { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+    .form-row input { padding: 10px 14px; border-radius: 8px; border: 1px solid #1e293b; background: #0f0f1a; color: #e2e8f0; font-size: 14px; min-width: 180px; }
+    .form-row button { padding: 10px 24px; border-radius: 8px; border: none; background: linear-gradient(135deg,#7c3aed,#4f46e5); color: #fff; font-weight: 600; cursor: pointer; font-size: 14px; }
+    .form-row button:disabled { opacity: 0.5; }
+    .msg { margin-top: 10px; font-size: 13px; }
+    .msg.success { color: #34d399; }
+    .msg.error { color: #f87171; }
+
+    .spinner { width: 24px; height: 24px; border: 3px solid #1e293b; border-top-color: #7c3aed; border-radius: 50%; animation: spin .6s linear infinite; margin: 40px auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .empty { text-align: center; padding: 40px; color: #64748b; }
+    .install-banner { display: none; background: #1e1e2e; border-radius: 12px; padding: 12px 16px; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+    .install-banner.show { display: flex; }
+    .install-banner button { background: #7c3aed; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; cursor: pointer; font-weight: 600; }
+    footer { text-align: center; padding: 24px; color: #475569; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="logo">⚡</div>
+      <h1>Event Notifier</h1>
+      <p class="sub">Tech events, hackathons & AI meetups — notified free</p>
+    </header>
+
+    <div class="install-banner" id="installBanner">
+      <span>📲 Install for quick access & notifications</span>
+      <button id="installBtn">Install</button>
+    </div>
+
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-tag="all">All</button>
+      <button class="tab" data-tag="hackathon">Hackathon</button>
+      <button class="tab" data-tag="ai">AI</button>
+      <button class="tab" data-tag="meetup">Meetup</button>
+      <button class="tab" data-tag="startup">Startup</button>
+    </div>
+
+    <div class="status">
+      <span id="statusText">Loading events...</span>
+      <span id="countBadge"></span>
+    </div>
+    <div class="events" id="eventsList"><div class="spinner"></div></div>
+
+    <div class="subscribe">
+      <h2>Get notified</h2>
+      <p>Get email alerts for new tech events near you</p>
+      <form id="subscribeForm">
+        <div class="form-row">
+          <input type="email" id="emailInput" placeholder="your@email.com" required />
+          <input type="text" id="cityInput" placeholder="City (e.g. Bangalore)" />
+          <button type="submit" id="subscribeBtn">Subscribe</button>
+        </div>
+      </form>
+      <p class="msg" id="subscribeMsg"></p>
+    </div>
+
+    <footer>⚡ Event Notifier · Scrapes Devfolio, Devpost, Meetup, Eventbrite, Luma · Digests at 9AM / 12PM / 6PM / 10PM</footer>
+  </div>
+
+  <script>
+    let allEvents = [];
+    let activeTag = 'all';
+    let deferredPrompt = null;
+
+    // Install PWA
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      document.getElementById('installBanner').classList.add('show');
+    });
+    document.getElementById('installBtn').addEventListener('click', async () => {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        await deferredPrompt.userChoice;
+        deferredPrompt = null;
+        document.getElementById('installBanner').classList.remove('show');
+      }
+    });
+
+    // Register service worker for notifications
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js');
+    }
+
+    // Request notification permission
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+
+    // Load events
+    async function loadEvents() {
+      const list = document.getElementById('eventsList');
+      const statusText = document.getElementById('statusText');
+      const countBadge = document.getElementById('countBadge');
+      try {
+        const params = new URLSearchParams({ upcoming: 'true', limit: '50' });
+        const city = document.getElementById('cityInput').value.trim();
+        if (city) params.set('city', city);
+        const res = await fetch(`/api/events?${params}`);
+        const { data, meta } = await res.json();
+        allEvents = data;
+        countBadge.textContent = `${meta.total} events`;
+        statusText.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+        renderEvents();
+      } catch (err) {
+        statusText.textContent = 'Offline — showing cached';
+        if (!allEvents.length) {
+          list.innerHTML = '<div class="empty">⚠️ Backend is waking up... try again in 30s</div>';
+        }
+      }
+    }
+
+    function renderEvents() {
+      const list = document.getElementById('eventsList');
+      let filtered = activeTag === 'all' ? allEvents : allEvents.filter(e => e.tags?.includes(activeTag));
+      if (!filtered.length) {
+        list.innerHTML = '<div class="empty">🔍 No events found</div>';
+        return;
+      }
+      list.innerHTML = filtered.map(e => {
+        const d = new Date(e.date);
+        const ds = d.toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+        const tags = (e.tags || ['tech']).map(t => `<span class="tag tag-${t}">${t}</span>`).join('');
+        return `<div class="card">
+          <div class="card-tags">${tags}<span class="source">${e.source}</span></div>
+          <div class="card-title">${esc(e.title)}</div>
+          <div class="card-details">
+            <span>📅 ${ds}</span><span>📍 ${esc(e.location)}</span>${e.city ? `<span>🏙️ ${esc(e.city)}</span>` : ''}
+          </div>
+          <a class="card-link" href="${esc(e.link)}" target="_blank">View Event →</a>
+        </div>`;
+      }).join('');
+    }
+
+    function esc(s) { return (s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    // Tabs
+    document.getElementById('tabs').addEventListener('click', (e) => {
+      if (!e.target.classList.contains('tab')) return;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      e.target.classList.add('active');
+      activeTag = e.target.dataset.tag;
+      renderEvents();
+    });
+
+    // Subscribe
+    document.getElementById('subscribeForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('emailInput').value.trim();
+      const city = document.getElementById('cityInput').value.trim();
+      const btn = document.getElementById('subscribeBtn');
+      const msg = document.getElementById('subscribeMsg');
+      if (!email) return;
+      btn.disabled = true; msg.textContent = 'Subscribing...';
+      try {
+        const res = await fetch('/api/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, city: city || undefined, preferences: { notifyEmail: true, tags: [] } }),
+        });
+        if (!res.ok) throw Error();
+        msg.textContent = city ? `✅ Subscribed for ${city}! Check email.` : '✅ Subscribed! Check email.';
+        msg.className = 'msg success';
+        document.getElementById('emailInput').value = '';
+        document.getElementById('cityInput').value = '';
+      } catch {
+        msg.textContent = '❌ Failed. Try again.';
+        msg.className = 'msg error';
+      }
+      btn.disabled = false;
+      setTimeout(() => msg.textContent = '', 4000);
+    });
+
+    loadEvents();
+    setInterval(loadEvents, 30000);
+  </script>
+</body>
+</html>
