@@ -40,3 +40,9 @@ model User {
 
   @@index([city])
 }
+
+model PendingDigest {
+  id        String   @id @default(uuid())
+  eventData Json
+  createdAt DateTime @default(now())
+}

@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: eventnotifier
+    env: node
+    region: singapore
+    buildCommand: cd backend && npm install && npx playwright install chromium && npx prisma generate && npx prisma migrate deploy
+    startCommand: cd backend && node start.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: PLAYWRIGHT_BROWSERS_PATH
+        value: /opt/render/project/.cache/ms-playwright
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: SCRAPE_INTERVAL_MINUTES
+        value: 30
+databases:
+  - name: eventnotifier-db
+    region: singapore
+    plan: free
+    databaseName: eventnotifier
+    user: eventuser

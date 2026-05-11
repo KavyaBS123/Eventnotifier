@@ -66,6 +66,9 @@ const NON_TECH_KEYWORDS = [
   'sunday', 'weekend plan',
   'elite networking', 'high-stakes networking',
   'modeling masterclass',
+  'crochet', 'knitting', 'sewing',
+  'therapy', 'therapie', 'rechtschreibregeln', 'lerntherapie',
+  'biotech', 'life sciences',
 ];
 
 function isTechEvent(event) {

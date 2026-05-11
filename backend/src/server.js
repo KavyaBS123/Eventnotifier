@@ -167,12 +167,16 @@ app.get('/api/health', async (req, res) => {
 // ─────────────────────────────────────────────────────────────
 app.post('/api/scrape/trigger', async (req, res) => {
   try {
-    const { addScrapeJob } = require('./queue/producer');
-    await addScrapeJob();
-    res.json({ message: 'Scrape job queued successfully' });
+    const { runAllScrapers } = require('./scrapers/index');
+    const { addEventsToDigest } = require('./services/digest');
+    const newEvents = await runAllScrapers();
+    if (newEvents.length > 0) {
+      await addEventsToDigest(newEvents);
+    }
+    res.json({ message: `Scrape complete. ${newEvents.length} new event(s).` });
   } catch (err) {
     console.error('POST /api/scrape/trigger error:', err);
-    res.status(500).json({ error: 'Failed to queue scrape job' });
+    res.status(500).json({ error: 'Failed to run scrapers' });
   }
 });
 
